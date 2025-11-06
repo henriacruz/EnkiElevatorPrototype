@@ -97,14 +97,3 @@ Alimentação: VCC=3.3V
 ### Diagrama Wokwi
 
 Acesse o projeto completo no Wokwi: [Link do Projeto](https://wokwi.com/projects/440591027508086785)
-
----
-
-## 💾 Instalação
-
-### 1. Configuração do Arduino IDE
-
-1. Instale o [Arduino IDE](https://www.arduino.cc/en/software) (versão 2.0 ou superior)
-
-2. Adicione suporte ao ESP32:
-   - Vá em `Arquivo
