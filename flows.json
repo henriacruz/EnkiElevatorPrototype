@@ -1,0 +1,1357 @@
+[
+  {
+      "id": "d896593336ac981c",
+      "type": "tab",
+      "label": "Enki Prototype",
+      "disabled": false,
+      "info": "",
+      "env": []
+  },
+  {
+      "id": "e4d44590295bd22c",
+      "type": "ui-template",
+      "z": "d896593336ac981c",
+      "group": "38c3216ef43f31f7",
+      "page": "",
+      "ui": "",
+      "name": "Header",
+      "order": 1,
+      "width": 0,
+      "height": 0,
+      "head": "",
+      "format": "<template>\n  <div class=\"header-logos\">\n    <img src=\"https://i0.wp.com/innovationweeksjc.com.br/wp-content/uploads/2024/08/Artboard-1.png?fit=854%2C403&ssl=1\" alt=\"University Logo\" class=\"logo\">\n    <img src=\"https://paulocruzautomacoes.com.br/wp-content/uploads/2025/09/enki.png\" alt=\"Group Logo\" class=\"logo\">\n    <img src=\"https://upload.wikimedia.org/wikipedia/commons/thumb/7/71/Otis_logo.SVG/2560px-Otis_logo.SVG.png\" alt=\"Main Partner Logo\" class=\"logo\">\n  </div>\n</template>\n\n<style>\n  .header-logos {\n    display: flex;\n    justify-content: center;\n    align-items: center;\n    gap: 20px;\n    margin-bottom: 15px;\n  }\n  .header-logos .logo {\n    max-height: 60px;\n    object-fit: contain;\n  }\n</style>\n",
+      "storeOutMessages": true,
+      "passthru": true,
+      "resendOnRefresh": true,
+      "templateScope": "local",
+      "className": "",
+      "x": 140,
+      "y": 100,
+      "wires": [
+          []
+      ]
+  },
+  {
+      "id": "4068ebf51a6e7a96",
+      "type": "ui-number-input",
+      "z": "d896593336ac981c",
+      "group": "d75573603da90a0f",
+      "name": "Measure in Meters",
+      "label": "Measure in Meters",
+      "order": 1,
+      "width": "4",
+      "height": "1",
+      "topic": "topic",
+      "topicType": "msg",
+      "min": 0,
+      "max": "100",
+      "step": "0.1",
+      "tooltip": "",
+      "passthru": true,
+      "sendOnBlur": true,
+      "sendOnEnter": true,
+      "className": "",
+      "clearable": true,
+      "icon": "",
+      "iconPosition": "left",
+      "iconInnerPosition": "inside",
+      "spinner": "default",
+      "x": 170,
+      "y": 200,
+      "wires": [
+          [
+              "2f65be3f01f8d862"
+          ]
+      ]
+  },
+  {
+      "id": "2f65be3f01f8d862",
+      "type": "function",
+      "z": "d896593336ac981c",
+      "name": "storeHeight",
+      "func": "flow.set('maxHeight', msg.payload);\nnode.status({fill:\"blue\",shape:\"dot\",text:`Altura: ${msg.payload}m`});\nreturn msg;",
+      "outputs": 1,
+      "timeout": 0,
+      "noerr": 0,
+      "initialize": "",
+      "finalize": "",
+      "libs": [],
+      "x": 410,
+      "y": 200,
+      "wires": [
+          []
+      ]
+  },
+  {
+      "id": "7ee3d29224ec3763",
+      "type": "ui-button",
+      "z": "d896593336ac981c",
+      "group": "d75573603da90a0f",
+      "name": "ConfirmationButton",
+      "label": "🚀 Start Measurement",
+      "order": 2,
+      "width": "4",
+      "height": "1",
+      "emulateClick": false,
+      "tooltip": "",
+      "color": "",
+      "bgcolor": "",
+      "className": "",
+      "icon": "",
+      "iconPosition": "left",
+      "payload": "",
+      "payloadType": "str",
+      "topic": "topic",
+      "topicType": "msg",
+      "buttonColor": "green",
+      "textColor": "white",
+      "iconColor": "",
+      "enableClick": true,
+      "x": 190,
+      "y": 260,
+      "wires": [
+          [
+              "1f510c26d584f519"
+          ]
+      ]
+  },
+  {
+      "id": "c40cbb5a51ac0807",
+      "type": "trigger",
+      "z": "d896593336ac981c",
+      "name": "",
+      "op1": "",
+      "op2": "stop",
+      "op1type": "nul",
+      "op2type": "str",
+      "duration": "0",
+      "extend": false,
+      "overrideDelay": false,
+      "units": "ms",
+      "reset": "",
+      "bytopic": "all",
+      "topic": "topic",
+      "outputs": 1,
+      "x": 580,
+      "y": 380,
+      "wires": [
+          [
+              "generate_sim_data"
+          ]
+      ]
+  },
+  {
+      "id": "1f510c26d584f519",
+      "type": "function",
+      "z": "d896593336ac981c",
+      "name": "Preparar JSON para ESP32",
+      "func": "let height = flow.get('maxHeight') || 0;\n\nif (height <= 0) {\n    node.error(\"Altura não definida ou inválida!\");\n    node.status({fill:\"red\",shape:\"ring\",text:\"Erro: altura = 0\"});\n    return null;\n}\n\nlet heightCm = height * 100;\n\nmsg.payload = JSON.stringify({\n    maxHeight: heightCm\n});\n\nmsg.topic = \"enki/esp32/start\";\n\nnode.status({fill:\"green\",shape:\"dot\",text:`Enviando ${heightCm}cm`});\nnode.warn(`📤 Enviando para ESP32: ${msg.payload}`);\n\nreturn msg;",
+      "outputs": 1,
+      "timeout": "",
+      "noerr": 0,
+      "initialize": "",
+      "finalize": "",
+      "libs": [],
+      "x": 470,
+      "y": 260,
+      "wires": [
+          [
+              "89d3ea9504b92ac4",
+              "fd5207999bc32138"
+          ]
+      ]
+  },
+  {
+      "id": "89d3ea9504b92ac4",
+      "type": "mqtt out",
+      "z": "d896593336ac981c",
+      "name": "📤 Enviar para ESP32",
+      "topic": "enki/esp32/start",
+      "qos": "0",
+      "retain": "",
+      "broker": "ce0ea5734c35a8a7",
+      "x": 770,
+      "y": 260,
+      "wires": []
+  },
+  {
+      "id": "fd5207999bc32138",
+      "type": "debug",
+      "z": "d896593336ac981c",
+      "name": "Debug Envio",
+      "active": true,
+      "tosidebar": true,
+      "console": false,
+      "tostatus": false,
+      "complete": "payload",
+      "targetType": "msg",
+      "x": 750,
+      "y": 200,
+      "wires": []
+  },
+  {
+      "id": "5c7dd3179564c771",
+      "type": "mqtt in",
+      "z": "d896593336ac981c",
+      "name": "📥 Receber do ESP32",
+      "topic": "enki/esp32/data",
+      "qos": "0",
+      "datatype": "json",
+      "broker": "ce0ea5734c35a8a7",
+      "nl": false,
+      "rap": true,
+      "rh": 0,
+      "inputs": 0,
+      "x": 160,
+      "y": 600,
+      "wires": [
+          [
+              "4dd10d4b87603cbd"
+          ]
+      ]
+  },
+  {
+      "id": "4dd10d4b87603cbd",
+      "type": "function",
+      "z": "d896593336ac981c",
+      "name": "Parse Dados ESP32",
+      "func": "let data = msg.payload;\n\nnode.warn(`📥 Dados recebidos: ${JSON.stringify(data)}`);\nnode.status({fill:\"green\",shape:\"dot\",text:`Altura: ${data.alturaAtual}cm`});\n\n// Salva para Telegram\nglobal.set('ultimaMedicao', {\n    altura: data.alturaAtual,\n    distEsq: data.distance_left * 1000,\n    distDir: data.distance_right * 1000,\n    distFrente: data.distance_front * 1000,\n    accelX: data.accel.x,\n    accelY: data.accel.y,\n    accelZ: data.accel.z,\n    timestamp: Date.now()\n});\n\nmsg.payload = data;\nreturn msg;",
+      "outputs": 1,
+      "timeout": 0,
+      "noerr": 0,
+      "initialize": "",
+      "finalize": "",
+      "libs": [],
+      "x": 400,
+      "y": 600,
+      "wires": [
+          [
+              "e36ffb7a2628401d",
+              "59687d85a0859ae6",
+              "294e78750a079b21",
+              "adcc9c5d1881981a",
+              "52ab3fce917bb404",
+              "996683c6047b299b"
+          ]
+      ]
+  },
+  {
+      "id": "adcc9c5d1881981a",
+      "type": "debug",
+      "z": "d896593336ac981c",
+      "name": "Debug Recebimento",
+      "active": true,
+      "tosidebar": true,
+      "console": false,
+      "tostatus": false,
+      "complete": "payload",
+      "targetType": "msg",
+      "x": 650,
+      "y": 540,
+      "wires": []
+  },
+  {
+      "id": "e36ffb7a2628401d",
+      "type": "function",
+      "z": "d896593336ac981c",
+      "name": "Split Accelerometer (Time)",
+      "func": "let s = msg.payload;\nlet msgs = [];\n\nif (s.accel) {\n    msgs.push({ topic: \"Accel X\", payload: s.accel.x });\n    msgs.push({ topic: \"Accel Y\", payload: s.accel.y });\n    msgs.push({ topic: \"Accel Z\", payload: s.accel.z });\n}\n\nreturn [msgs];",
+      "outputs": 1,
+      "timeout": 0,
+      "noerr": 0,
+      "initialize": "",
+      "finalize": "",
+      "libs": [],
+      "x": 690,
+      "y": 600,
+      "wires": [
+          [
+              "0eb6848a36136f67"
+          ]
+      ]
+  },
+  {
+      "id": "59687d85a0859ae6",
+      "type": "function",
+      "z": "d896593336ac981c",
+      "name": "Split Distances (Time)",
+      "func": "let s = msg.payload;\nlet msgs = [];\n\nmsgs.push({ topic: \"Distance Front\", payload: s.distance_front });\nmsgs.push({ topic: \"Distance Left\", payload: s.distance_left });\nmsgs.push({ topic: \"Distance Right\", payload: s.distance_right });\n\nreturn [msgs];",
+      "outputs": 1,
+      "timeout": 0,
+      "noerr": 0,
+      "initialize": "",
+      "finalize": "",
+      "libs": [],
+      "x": 670,
+      "y": 660,
+      "wires": [
+          [
+              "05d9c2729d9e641c"
+          ]
+      ]
+  },
+  {
+      "id": "52ab3fce917bb404",
+      "type": "function",
+      "z": "d896593336ac981c",
+      "name": "Split Accelerometer (Height)",
+      "func": "let s = msg.payload;\nlet msgs = [];\nlet height = s.alturaAtual;\n\nif (s.accel) {\n    msgs.push({ \n        topic: \"Accel X\", \n        payload: s.accel.x,\n        x: height\n    });\n    msgs.push({ \n        topic: \"Accel Y\", \n        payload: s.accel.y,\n        x: height\n    });\n    msgs.push({ \n        topic: \"Accel Z\", \n        payload: s.accel.z,\n        x: height\n    });\n}\n\nreturn [msgs];",
+      "outputs": 1,
+      "timeout": 0,
+      "noerr": 0,
+      "initialize": "",
+      "finalize": "",
+      "libs": [],
+      "x": 700,
+      "y": 740,
+      "wires": [
+          [
+              "50057b389cf3a9da"
+          ]
+      ]
+  },
+  {
+      "id": "996683c6047b299b",
+      "type": "function",
+      "z": "d896593336ac981c",
+      "name": "Split Distances (Height)",
+      "func": "let s = msg.payload;\nlet msgs = [];\nlet height = s.alturaAtual;\n\nmsgs.push({ \n    topic: \"Distance Front\", \n    payload: s.distance_front,\n    x: height\n});\nmsgs.push({ \n    topic: \"Distance Left\", \n    payload: s.distance_left,\n    x: height\n});\nmsgs.push({ \n    topic: \"Distance Right\", \n    payload: s.distance_right,\n    x: height\n});\n\nreturn [msgs];",
+      "outputs": 1,
+      "timeout": 0,
+      "noerr": 0,
+      "initialize": "",
+      "finalize": "",
+      "libs": [],
+      "x": 680,
+      "y": 800,
+      "wires": [
+          [
+              "0e5af263170e25ed"
+          ]
+      ]
+  },
+  {
+      "id": "294e78750a079b21",
+      "type": "function",
+      "z": "d896593336ac981c",
+      "name": "Format Status",
+      "func": "let data = msg.payload;\nlet h = data.alturaAtual || 0;\nlet left = (data.distance_left * 1000).toFixed(0);\nlet right = (data.distance_right * 1000).toFixed(0);\nlet front = (data.distance_front * 1000).toFixed(0);\n\nmsg.payload = `🚀 Altura: ${h.toFixed(2)}cm | 📏 Esq: ${left}mm | Dir: ${right}mm | Frente: ${front}mm`;\n\nreturn msg;",
+      "outputs": 1,
+      "timeout": 0,
+      "noerr": 0,
+      "initialize": "",
+      "finalize": "",
+      "libs": [],
+      "x": 640,
+      "y": 860,
+      "wires": [
+          [
+              "4c34829134c1a344"
+          ]
+      ]
+  },
+  {
+      "id": "4c34829134c1a344",
+      "type": "ui-text",
+      "z": "d896593336ac981c",
+      "group": "d75573603da90a0f",
+      "order": 4,
+      "width": "12",
+      "height": "1",
+      "name": "Status Medição",
+      "label": "",
+      "format": "{{msg.payload}}",
+      "layout": "row-center",
+      "style": false,
+      "font": "",
+      "fontSize": 18,
+      "color": "#0094ce",
+      "className": "",
+      "x": 870,
+      "y": 860,
+      "wires": []
+  },
+  {
+      "id": "0eb6848a36136f67",
+      "type": "ui-chart",
+      "z": "d896593336ac981c",
+      "group": "009b9d62c53b5a1f",
+      "name": "Acceleration vs Time",
+      "label": "Acceleration (m/s²) vs Time",
+      "order": 1,
+      "chartType": "line",
+      "category": "topic",
+      "categoryType": "msg",
+      "xAxisLabel": "Time",
+      "xAxisProperty": "",
+      "xAxisPropertyType": "timestamp",
+      "xAxisType": "time",
+      "yAxisLabel": "m/s²",
+      "action": "append",
+      "stackSeries": false,
+      "pointShape": "circle",
+      "pointRadius": 2,
+      "showLegend": true,
+      "removeOlder": 1,
+      "removeOlderUnit": "3600",
+      "colors": [
+          "#ff0000",
+          "#00ff00",
+          "#0000ff"
+      ],
+      "width": 6,
+      "height": "6",
+      "className": "",
+      "interpolation": "linear",
+      "x": 950,
+      "y": 600,
+      "wires": [
+          []
+      ]
+  },
+  {
+      "id": "05d9c2729d9e641c",
+      "type": "ui-chart",
+      "z": "d896593336ac981c",
+      "group": "e83c18198eb13b00",
+      "name": "Distances vs Time",
+      "label": "Trail Distances (m) vs Time",
+      "order": 1,
+      "chartType": "line",
+      "category": "topic",
+      "categoryType": "msg",
+      "xAxisLabel": "Time",
+      "xAxisProperty": "",
+      "xAxisPropertyType": "timestamp",
+      "xAxisType": "time",
+      "yAxisLabel": "meters",
+      "action": "append",
+      "stackSeries": false,
+      "pointShape": "circle",
+      "pointRadius": 2,
+      "showLegend": true,
+      "removeOlder": 1,
+      "removeOlderUnit": "3600",
+      "colors": [
+          "#0095ff",
+          "#ff7f0e",
+          "#2ca02c"
+      ],
+      "width": 6,
+      "height": "6",
+      "className": "",
+      "interpolation": "linear",
+      "x": 940,
+      "y": 660,
+      "wires": [
+          []
+      ]
+  },
+  {
+      "id": "50057b389cf3a9da",
+      "type": "ui-chart",
+      "z": "d896593336ac981c",
+      "group": "c858b0b6a2eec9ee",
+      "name": "Acceleration vs Height",
+      "label": "Acceleration (m/s²) vs Height",
+      "order": 1,
+      "chartType": "line",
+      "category": "topic",
+      "categoryType": "msg",
+      "xAxisLabel": "Height (cm)",
+      "xAxisProperty": "x",
+      "xAxisPropertyType": "msg",
+      "xAxisType": "linear",
+      "yAxisLabel": "m/s²",
+      "action": "append",
+      "stackSeries": false,
+      "pointShape": "circle",
+      "pointRadius": 2,
+      "showLegend": true,
+      "removeOlder": "1000",
+      "removeOlderPoints": "1000",
+      "colors": [
+          "#ff0000",
+          "#00ff00",
+          "#0000ff"
+      ],
+      "width": 6,
+      "height": "6",
+      "className": "",
+      "interpolation": "linear",
+      "x": 960,
+      "y": 740,
+      "wires": [
+          []
+      ]
+  },
+  {
+      "id": "0e5af263170e25ed",
+      "type": "ui-chart",
+      "z": "d896593336ac981c",
+      "group": "d88514ff34985808",
+      "name": "Distances vs Height",
+      "label": "Trail Distances (m) vs Height",
+      "order": 1,
+      "chartType": "line",
+      "category": "topic",
+      "categoryType": "msg",
+      "xAxisLabel": "Height (cm)",
+      "xAxisProperty": "x",
+      "xAxisPropertyType": "msg",
+      "xAxisType": "linear",
+      "yAxisLabel": "meters",
+      "action": "append",
+      "stackSeries": false,
+      "pointShape": "circle",
+      "pointRadius": 2,
+      "showLegend": true,
+      "removeOlder": "1000",
+      "removeOlderPoints": "1000",
+      "colors": [
+          "#0095ff",
+          "#ff7f0e",
+          "#2ca02c"
+      ],
+      "width": 6,
+      "height": "6",
+      "className": "",
+      "interpolation": "linear",
+      "x": 950,
+      "y": 800,
+      "wires": [
+          []
+      ]
+  },
+  {
+      "id": "71493c255a6fe485",
+      "type": "ui-button",
+      "z": "d896593336ac981c",
+      "group": "d75573603da90a0f",
+      "name": "Clear Charts",
+      "label": "🗑️ Clear",
+      "order": 3,
+      "width": "2",
+      "height": "1",
+      "emulateClick": false,
+      "tooltip": "",
+      "color": "",
+      "bgcolor": "",
+      "className": "",
+      "icon": "",
+      "iconPosition": "left",
+      "payload": "",
+      "payloadType": "str",
+      "topic": "topic",
+      "topicType": "msg",
+      "buttonColor": "#666666",
+      "textColor": "white",
+      "iconColor": "",
+      "enableClick": true,
+      "x": 170,
+      "y": 320,
+      "wires": [
+          [
+              "3ee1830da85cf7e7"
+          ]
+      ]
+  },
+  {
+      "id": "3ee1830da85cf7e7",
+      "type": "function",
+      "z": "d896593336ac981c",
+      "name": "Clear Data",
+      "func": "msg.payload = [];\nreturn msg;",
+      "outputs": 1,
+      "timeout": 0,
+      "noerr": 0,
+      "initialize": "",
+      "finalize": "",
+      "libs": [],
+      "x": 350,
+      "y": 320,
+      "wires": [
+          [
+              "0eb6848a36136f67",
+              "05d9c2729d9e641c",
+              "50057b389cf3a9da",
+              "0e5af263170e25ed"
+          ]
+      ]
+  },
+  {
+      "id": "e82cc60f4fb5dee0",
+      "type": "telegram receiver",
+      "z": "d896593336ac981c",
+      "name": "Elevator Bot Receiver",
+      "bot": "4e4e5d693b95c32b",
+      "saveDataDir": "",
+      "filterCommands": false,
+      "x": 160,
+      "y": 980,
+      "wires": [
+          [
+              "4cffd203b87b6471",
+              "f35de2bfbb069ae6",
+              "96f9ff36a621d1b1"
+          ],
+          []
+      ]
+  },
+  {
+      "id": "f35de2bfbb069ae6",
+      "type": "function",
+      "z": "d896593336ac981c",
+      "name": "Menu Principal",
+      "func": "var chatId = msg.payload.chatId;\nvar buttons = [\n    [{\n        text: \"📊 Última Medição\",\n        callback_data: \"/Medicao\"\n    }],\n    [{\n        text: \"📈 Status do Sistema\",\n        callback_data: \"/Status\"\n    }],\n    [{\n        text: \"🚀 Iniciar Medição\",\n        callback_data: \"/Iniciar\"\n    }]\n];\n\nmsg.payload = {\n    type: \"message\",\n    content: \"🏗️ *ENKI Elevator Monitor*\\n\\nEscolha uma opção:\",\n    chatId: chatId,\n    options: {\n        parse_mode: \"Markdown\",\n        reply_markup: JSON.stringify({\n            inline_keyboard: buttons\n        })\n    }\n};\nreturn msg;",
+      "outputs": 1,
+      "timeout": 0,
+      "noerr": 0,
+      "initialize": "",
+      "finalize": "",
+      "libs": [],
+      "x": 400,
+      "y": 980,
+      "wires": [
+          [
+              "7025bca91c092bcc"
+          ]
+      ]
+  },
+  {
+      "id": "7025bca91c092bcc",
+      "type": "telegram sender",
+      "z": "d896593336ac981c",
+      "name": "Elevator Bot Sender",
+      "bot": "4e4e5d693b95c32b",
+      "haserroroutput": false,
+      "outputs": 1,
+      "x": 640,
+      "y": 1060,
+      "wires": [
+          []
+      ]
+  },
+  {
+      "id": "4cffd203b87b6471",
+      "type": "function",
+      "z": "d896593336ac981c",
+      "name": "Registrar Chat ID",
+      "func": "var chatId = msg.payload.chatId;\nvar chatType = msg.payload.chat?.type || \"private\";\nvar chatTitle = msg.payload.chat?.title || \"N/A\";\nvar username = msg.payload.from?.username || \"sem_username\";\nvar firstName = msg.payload.from?.first_name || \"Usuário\";\n\nnode.warn(\"━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\");\nnode.warn(\"📱 Novo contato: \" + chatId);\nnode.warn(\"Tipo: \" + chatType);\n\nif (chatType === \"group\" || chatType === \"supergroup\") {\n    node.warn(\"Nome do Grupo: \" + chatTitle);\n    node.warn(\"👥 GRUPO registrado!\");\n    global.set(\"groupChatId\", chatId);\n    \n    msg.payload = {\n        chatId: chatId,\n        type: \"message\",\n        content: \"✅ *Grupo Registrado!*\\n\\n\" +\n                 \"📋 Nome: \" + chatTitle + \"\\n\" +\n                 \"🆔 Chat ID: `\" + chatId + \"`\\n\\n\" +\n                 \"Todos os membros receberão notificações!\",\n        parse_mode: \"Markdown\"\n    };\n} else {\n    node.warn(\"Username: @\" + username);\n    node.warn(\"Nome: \" + firstName);\n    node.warn(\"👤 Chat INDIVIDUAL\");\n    \n    var chatIds = global.get(\"chatIds\") || [];\n    \n    if (!chatIds.includes(chatId)) {\n        chatIds.push(chatId);\n        global.set(\"chatIds\", chatIds);\n        node.warn(\"✓ Usuário adicionado!\");\n        \n        msg.payload = {\n            chatId: chatId,\n            type: \"message\",\n            content: \"✅ *Registrado com Sucesso!*\\n\\n\" +\n                     \"👤 Nome: \" + firstName + \"\\n\" +\n                     \"🆔 Seu Chat ID: `\" + chatId + \"`\\n\\n\" +\n                     \"Você receberá notificações do elevador!\",\n            parse_mode: \"Markdown\"\n        };\n    } else {\n        node.warn(\"⚠️ Usuário já registrado\");\n        return null;\n    }\n}\n\nnode.warn(\"━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\");\nreturn msg;",
+      "outputs": 1,
+      "timeout": "",
+      "noerr": 0,
+      "initialize": "",
+      "finalize": "",
+      "libs": [],
+      "x": 410,
+      "y": 920,
+      "wires": [
+          [
+              "7025bca91c092bcc"
+          ]
+      ]
+  },
+  {
+      "id": "f7e009d443c23afd",
+      "type": "telegram event",
+      "z": "d896593336ac981c",
+      "name": "Elevator Bot Action",
+      "bot": "4e4e5d693b95c32b",
+      "event": "callback_query",
+      "autoanswer": true,
+      "x": 160,
+      "y": 1100,
+      "wires": [
+          [
+              "f6d5fb1664634e80"
+          ]
+      ]
+  },
+  {
+      "id": "f6d5fb1664634e80",
+      "type": "switch",
+      "z": "d896593336ac981c",
+      "name": "Router de Comandos",
+      "property": "payload.content",
+      "propertyType": "msg",
+      "rules": [
+          {
+              "t": "eq",
+              "v": "/Medicao",
+              "vt": "str"
+          },
+          {
+              "t": "eq",
+              "v": "/Status",
+              "vt": "str"
+          },
+          {
+              "t": "eq",
+              "v": "/Iniciar",
+              "vt": "str"
+          }
+      ],
+      "checkall": "true",
+      "repair": false,
+      "outputs": 3,
+      "x": 390,
+      "y": 1100,
+      "wires": [
+          [
+              "81df000ca6161610"
+          ],
+          [
+              "9167c760944c8de8"
+          ],
+          [
+              "78c6b22bcf4ded0c"
+          ]
+      ]
+  },
+  {
+      "id": "81df000ca6161610",
+      "type": "function",
+      "z": "d896593336ac981c",
+      "name": "Responder Última Medição",
+      "func": "var dados = global.get(\"ultimaMedicao\") || null;\nvar chatId = msg.payload.chatId;\n\nif (!dados) {\n    msg.payload = {\n        chatId: chatId,\n        type: \"message\",\n        content: \"⚠️ *Nenhuma medição disponível*\\n\\nInicie uma medição primeiro!\",\n        parse_mode: \"Markdown\"\n    };\n    return msg;\n}\n\nvar tempo = new Date(dados.timestamp);\nvar tempoFormatado = tempo.toLocaleString(\"pt-BR\", {timeZone: \"America/Sao_Paulo\"});\n\nmsg.payload = {\n    chatId: chatId,\n    type: \"message\",\n    content: `📊 *Última Medição do Sensor*\\n\\n` +\n             `📏 Altura: *${dados.altura.toFixed(2)} cm*\\n\\n` +\n             `*Distâncias (mm):*\\n` +\n             `  ← Esquerda: ${dados.distEsq.toFixed(1)}mm\\n` +\n             `  → Direita: ${dados.distDir.toFixed(1)}mm\\n` +\n             `  ↑ Frente: ${dados.distFrente.toFixed(1)}mm\\n\\n` +\n             `*Acelerômetro (m/s²):*\\n` +\n             `  X: ${dados.accelX.toFixed(2)}\\n` +\n             `  Y: ${dados.accelY.toFixed(2)}\\n` +\n             `  Z: ${dados.accelZ.toFixed(2)}\\n\\n` +\n             `🕐 ${tempoFormatado}`,\n    parse_mode: \"Markdown\"\n};\n\nreturn msg;",
+      "outputs": 1,
+      "timeout": "",
+      "noerr": 0,
+      "initialize": "",
+      "finalize": "",
+      "libs": [],
+      "x": 650,
+      "y": 1060,
+      "wires": [
+          [
+              "7025bca91c092bcc"
+          ]
+      ]
+  },
+  {
+      "id": "9167c760944c8de8",
+      "type": "function",
+      "z": "d896593336ac981c",
+      "name": "Responder Status",
+      "func": "var chatId = msg.payload.chatId;\nvar ultimaMedicao = global.get(\"ultimaMedicao\");\nvar groupChatId = global.get(\"groupChatId\");\nvar chatIds = global.get(\"chatIds\") || [];\nvar maxHeight = flow.get(\"maxHeight\") || 0;\nvar simActive = flow.get(\"simulationActive\") || false;\n\nvar statusSensor = ultimaMedicao ? \"🟢 Online\" : \"🔴 Offline\";\nvar statusGrupo = groupChatId ? \"👥 Grupo ativo\" : \"👤 Modo individual\";\nvar totalUsuarios = groupChatId ? \"Grupo único\" : chatIds.length + \" usuários\";\nvar statusMedicao = simActive ? \"🟢 Medindo (Simulação)\" : \"⚪ Aguardando\";\n\nmsg.payload = {\n    chatId: chatId,\n    type: \"message\",\n    content: `⚙️ *Status do Sistema ENKI*\\n\\n` +\n             `📡 Sensor: ${statusSensor}\\n` +\n             `🔧 Medição: ${statusMedicao}\\n` +\n             `📏 Altura máxima: ${maxHeight}m\\n` +\n             `👥 Modo: ${statusGrupo}\\n` +\n             `📱 Destinatários: ${totalUsuarios}\\n\\n` +\n             `_Última atualização: ${new Date().toLocaleString(\"pt-BR\")}_`,\n    parse_mode: \"Markdown\"\n};\n\nreturn msg;",
+      "outputs": 1,
+      "timeout": "",
+      "noerr": 0,
+      "initialize": "",
+      "finalize": "",
+      "libs": [],
+      "x": 630,
+      "y": 1120,
+      "wires": [
+          [
+              "7025bca91c092bcc"
+          ]
+      ]
+  },
+  {
+      "id": "8ccd8904b4f49743",
+      "type": "function",
+      "z": "d896593336ac981c",
+      "name": "Iniciar Medição",
+      "func": "var chatId = msg.payload.chatId;\nvar maxHeight = flow.get(\"maxHeight\") || 0;\n\nif (maxHeight <= 0) {\n    msg.payload = {\n        chatId: chatId,\n        type: \"message\",\n        content: \"⚠️ *Altura não definida!*\\n\\nDefina a altura no dashboard primeiro.\",\n        parse_mode: \"Markdown\"\n    };\n    return [msg, null];\n}\n\nvar simActive = flow.get(\"simulationActive\") || false;\n\nif (simActive) {\n    msg.payload = {\n        chatId: chatId,\n        type: \"message\",\n        content: \"⚠️ *Medição já em andamento!*\\n\\nAguarde a conclusão.\",\n        parse_mode: \"Markdown\"\n    };\n    return [msg, null];\n}\n\nmsg.payload = {\n    chatId: chatId,\n    type: \"message\",\n    content: `🚀 *Iniciando Medição*\\n\\n📏 Altura: ${maxHeight}m\\n\\n_Aguarde..._`,\n    parse_mode: \"Markdown\"\n};\n\nvar startMsg = {payload: \"start\"};\n\nreturn [msg, startMsg];",
+      "outputs": 2,
+      "timeout": "",
+      "noerr": 0,
+      "initialize": "",
+      "finalize": "",
+      "libs": [],
+      "x": 620,
+      "y": 1180,
+      "wires": [
+          [
+              "7025bca91c092bcc"
+          ],
+          []
+      ]
+  },
+  {
+      "id": "f20463c0246ecb4f",
+      "type": "telegram command",
+      "z": "d896593336ac981c",
+      "name": "Comando /medicao",
+      "command": "/medicao",
+      "description": "Última medição do sensor",
+      "registercommand": true,
+      "language": "",
+      "scope": "default",
+      "bot": "4e4e5d693b95c32b",
+      "strict": false,
+      "hasresponse": true,
+      "outputs": 2,
+      "x": 170,
+      "y": 1160,
+      "wires": [
+          [
+              "81df000ca6161610"
+          ],
+          []
+      ]
+  },
+  {
+      "id": "c35c90160c5f44a1",
+      "type": "telegram command",
+      "z": "d896593336ac981c",
+      "name": "Comando /status",
+      "command": "/status",
+      "description": "Status do sistema",
+      "registercommand": true,
+      "language": "",
+      "scope": "default",
+      "bot": "4e4e5d693b95c32b",
+      "strict": false,
+      "hasresponse": true,
+      "outputs": 2,
+      "x": 160,
+      "y": 1220,
+      "wires": [
+          [
+              "9167c760944c8de8"
+          ],
+          []
+      ]
+  },
+  {
+      "id": "sim_button",
+      "type": "ui-button",
+      "z": "d896593336ac981c",
+      "group": "d75573603da90a0f",
+      "name": "SimButton",
+      "label": "🎮 Simulate Data",
+      "order": 5,
+      "width": "4",
+      "height": "1",
+      "emulateClick": false,
+      "tooltip": "",
+      "color": "",
+      "bgcolor": "",
+      "className": "",
+      "icon": "",
+      "iconPosition": "left",
+      "payload": "",
+      "payloadType": "str",
+      "topic": "topic",
+      "topicType": "msg",
+      "buttonColor": "#9c27b0",
+      "textColor": "white",
+      "iconColor": "",
+      "enableClick": true,
+      "x": 170,
+      "y": 380,
+      "wires": [
+          [
+              "start_simulation"
+          ]
+      ]
+  },
+  {
+      "id": "start_simulation",
+      "type": "function",
+      "z": "d896593336ac981c",
+      "name": "Start Simulation",
+      "func": "let maxHeight = flow.get('maxHeight') || 5;\nlet telegramChatId = msg.telegramChatId || null;\n\nflow.set('simulationActive', true);\nflow.set('simHeight', 0);\nflow.set('simMaxHeight', maxHeight * 100);\n\nif (telegramChatId) {\n    flow.set('currentMeasurementChatId', telegramChatId);\n    node.warn(`🎮 Simulação iniciada via Telegram: ${maxHeight}m (chat: ${telegramChatId})`);\n} else {\n    node.warn(`🎮 Simulação iniciada via Dashboard: ${maxHeight}m`);\n}\n\nnode.status({fill:\"green\",shape:\"dot\",text:`Iniciando ${maxHeight}m`});\n\nmsg.payload = \"start\";\nreturn msg;",
+      "outputs": 1,
+      "timeout": 0,
+      "noerr": 0,
+      "initialize": "",
+      "finalize": "",
+      "libs": [],
+      "x": 360,
+      "y": 380,
+      "wires": [
+          [
+              "c40cbb5a51ac0807"
+          ]
+      ]
+  },
+  {
+      "id": "sim_loop",
+      "type": "inject",
+      "z": "d896593336ac981c",
+      "name": "Simulation Loop (500ms)",
+      "props": [
+          {
+              "p": "payload"
+          }
+      ],
+      "repeat": "0.5",
+      "crontab": "",
+      "once": false,
+      "onceDelay": 0.1,
+      "topic": "",
+      "payload": "",
+      "payloadType": "date",
+      "x": 140,
+      "y": 440,
+      "wires": [
+          [
+              "generate_sim_data"
+          ]
+      ]
+  },
+  {
+      "id": "generate_sim_data",
+      "type": "function",
+      "z": "d896593336ac981c",
+      "name": "Generate Simulated Data",
+      "func": "// Verifica se simulação está ativa\nlet active = flow.get('simulationActive');\nif (!active) {\n    return null;\n}\n\nlet currentHeight = flow.get('simHeight') || 0;\nlet maxHeight = flow.get('simMaxHeight') || 500;\nlet telegramChatId = flow.get('currentMeasurementChatId');\n\n// Incrementa altura (0.5cm por iteração)\ncurrentHeight += 0.5;\n\n// Verifica se chegou ao final\nif (currentHeight > maxHeight) {\n    flow.set('simulationActive', false);\n    flow.set('simHeight', 0);\n    node.status({fill:\"yellow\",shape:\"ring\",text:\"Completo!\"});\n    node.warn(`✅ Simulação concluída: ${maxHeight}cm`);\n    \n    // Envia notificação Telegram\n    let chatId = telegramChatId || global.get('groupChatId') || (global.get('chatIds') || [])[0];\n    \n    if (chatId) {\n        let telegramMsg = {\n            payload: {\n                chatId: chatId,\n                type: 'message',\n                content: `✅ *Medição Concluída!*\\n\\n` +\n                         `📏 Altura total: ${(maxHeight/100).toFixed(2)}m (${maxHeight.toFixed(0)}cm)\\n` +\n                         `📊 Total de pontos: ${Math.floor(maxHeight / 0.5)}\\n` +\n                         `🕐 ${new Date().toLocaleString('pt-BR')}\\n\\n` +\n                         `Use /medicao para ver a última leitura`,\n                parse_mode: 'Markdown'\n            }\n        };\n        \n        // Limpa chat ID\n        flow.set('currentMeasurementChatId', null);\n        \n        return [null, telegramMsg];\n    }\n    \n    return null;\n}\n\nflow.set('simHeight', currentHeight);\n\n// Gera dados simulados realistas\nfunction getRandom(min, max) {\n    return Math.random() * (max - min) + min;\n}\n\n// Simula pequenas variações nas distâncias\nlet baseLeft = 0.35 + Math.sin(currentHeight / 50) * 0.02;\nlet baseRight = 0.34 + Math.cos(currentHeight / 50) * 0.02;\nlet baseFront = 0.55 + Math.sin(currentHeight / 30) * 0.03;\n\n// Simula vibração no acelerômetro\nlet baseAccelX = 9.81 + getRandom(-0.1, 0.1);\nlet baseAccelY = 0.05 + getRandom(-0.05, 0.05);\nlet baseAccelZ = 0.02 + getRandom(-0.03, 0.03);\n\nlet data = {\n    alturaAtual: parseFloat(currentHeight.toFixed(2)),\n    distance_left: parseFloat((baseLeft + getRandom(-0.005, 0.005)).toFixed(3)),\n    distance_right: parseFloat((baseRight + getRandom(-0.005, 0.005)).toFixed(3)),\n    distance_front: parseFloat((baseFront + getRandom(-0.005, 0.005)).toFixed(3)),\n    accel: {\n        x: parseFloat(baseAccelX.toFixed(3)),\n        y: parseFloat(baseAccelY.toFixed(3)),\n        z: parseFloat(baseAccelZ.toFixed(3))\n    }\n};\n\n// Salva última medição para Telegram\nglobal.set('ultimaMedicao', {\n    altura: currentHeight,\n    distEsq: data.distance_left * 1000,\n    distDir: data.distance_right * 1000,\n    distFrente: data.distance_front * 1000,\n    accelX: data.accel.x,\n    accelY: data.accel.y,\n    accelZ: data.accel.z,\n    timestamp: Date.now()\n});\n\nnode.status({fill:\"green\",shape:\"dot\",text:`${currentHeight.toFixed(1)}/${maxHeight}cm`});\n\nmsg.payload = data;\nreturn [msg, null];",
+      "outputs": 2,
+      "timeout": 0,
+      "noerr": 0,
+      "initialize": "",
+      "finalize": "",
+      "libs": [],
+      "x": 430,
+      "y": 440,
+      "wires": [
+          [
+              "4dd10d4b87603cbd"
+          ],
+          [
+              "81df000ca6161610"
+          ]
+      ]
+  },
+  {
+      "id": "stop_sim_button",
+      "type": "ui-button",
+      "z": "d896593336ac981c",
+      "group": "d75573603da90a0f",
+      "name": "StopSimButton",
+      "label": "⏹️ Stop Simulation",
+      "order": 6,
+      "width": "2",
+      "height": "1",
+      "emulateClick": false,
+      "tooltip": "",
+      "color": "",
+      "bgcolor": "",
+      "className": "",
+      "icon": "",
+      "iconPosition": "left",
+      "payload": "",
+      "payloadType": "str",
+      "topic": "topic",
+      "topicType": "msg",
+      "buttonColor": "#f44336",
+      "textColor": "white",
+      "iconColor": "",
+      "enableClick": true,
+      "x": 160,
+      "y": 500,
+      "wires": [
+          [
+              "stop_simulation"
+          ]
+      ]
+  },
+  {
+      "id": "stop_simulation",
+      "type": "function",
+      "z": "d896593336ac981c",
+      "name": "Stop Simulation",
+      "func": "flow.set('simulationActive', false);\nflow.set('simHeight', 0);\nnode.status({fill:\"red\",shape:\"ring\",text:\"Parado\"});\nnode.warn('⏹️ Simulação parada');\nmsg.payload = \"stopped\";\nreturn msg;",
+      "outputs": 1,
+      "timeout": 0,
+      "noerr": 0,
+      "initialize": "",
+      "finalize": "",
+      "libs": [],
+      "x": 360,
+      "y": 500,
+      "wires": [
+          []
+      ]
+  },
+  {
+      "id": "78c6b22bcf4ded0c",
+      "type": "function",
+      "z": "d896593336ac981c",
+      "name": "Solicitar Altura",
+      "func": "var chatId = msg.payload.chatId;\n\n// Define que está aguardando altura deste usuário\nflow.set('awaitingHeight_' + chatId, true);\n\nmsg.payload = {\n    chatId: chatId,\n    type: \"message\",\n    content: \"📏 *Digite a altura do trilho*\\n\\n\" +\n             \"Informe a altura em *centímetros* (ex: 150)\\n\\n\" +\n             \"_Envie apenas o número_\",\n    parse_mode: \"Markdown\",\n    options: {\n        reply_markup: JSON.stringify({\n            force_reply: true\n        })\n    }\n};\n\nreturn msg;",
+      "outputs": 1,
+      "timeout": "",
+      "noerr": 0,
+      "initialize": "",
+      "finalize": "",
+      "libs": [],
+      "x": 620,
+      "y": 1240,
+      "wires": [
+          [
+              "8ccd8904b4f49743"
+          ]
+      ]
+  },
+  {
+      "id": "96f9ff36a621d1b1",
+      "type": "function",
+      "z": "d896593336ac981c",
+      "name": "Processar Altura Recebida",
+      "func": "var chatId = msg.payload.chatId;\nvar text = msg.payload.content;\n\n// Verifica se está aguardando altura deste usuário\nvar awaiting = flow.get('awaitingHeight_' + chatId);\n\nif (!awaiting) {\n    return null; // Não está aguardando altura\n}\n\n// Remove flag de aguardando\nflow.set('awaitingHeight_' + chatId, false);\n\n// Valida entrada\nvar altura = parseFloat(text);\n\nif (isNaN(altura) || altura <= 0 || altura > 10000) {\n    msg.payload = {\n        chatId: chatId,\n        type: \"message\",\n        content: \"❌ *Altura inválida!*\\n\\n\" +\n                 \"Por favor, digite um número entre 1 e 10000 cm\\n\\n\" +\n                 \"Tente novamente com /iniciar\",\n        parse_mode: \"Markdown\"\n    };\n    return [msg, null];\n}\n\n// Converte para metros e salva\nvar alturaMetros = altura / 100;\nflow.set('maxHeight', alturaMetros);\nflow.set('telegramHeight_' + chatId, altura);\n\nnode.warn(`✅ Altura definida: ${altura}cm (${alturaMetros}m) pelo chat ${chatId}`);\n\n// Verifica se já está medindo\nvar simActive = flow.get('simulationActive') || false;\n\nif (simActive) {\n    msg.payload = {\n        chatId: chatId,\n        type: \"message\",\n        content: \"⚠️ *Medição já em andamento!*\\n\\nAguarde a conclusão.\",\n        parse_mode: \"Markdown\"\n    };\n    return [msg, null];\n}\n\n// Envia confirmação e inicia\nmsg.payload = {\n    chatId: chatId,\n    type: \"message\",\n    content: `🚀 *Iniciando Medição*\\n\\n` +\n             `📏 Altura: ${altura}cm (${alturaMetros.toFixed(2)}m)\\n\\n` +\n             `_Medição em andamento..._`,\n    parse_mode: \"Markdown\"\n};\n\n// Mensagem para iniciar simulação\nvar startMsg = {\n    payload: \"start\",\n    telegramChatId: chatId\n};\n\nreturn [msg, startMsg];",
+      "outputs": 2,
+      "timeout": "",
+      "noerr": 0,
+      "initialize": "",
+      "finalize": "",
+      "libs": [],
+      "x": 440,
+      "y": 1020,
+      "wires": [
+          [],
+          []
+      ]
+  },
+  {
+      "id": "d0570422df7480e0",
+      "type": "function",
+      "z": "d896593336ac981c",
+      "name": "Generate Simulated Data (Updated)",
+      "func": "// Verifica se simulação está ativa\nlet active = flow.get('simulationActive');\nif (!active) {\n    return null;\n}\n\nlet currentHeight = flow.get('simHeight') || 0;\nlet maxHeight = flow.get('simMaxHeight') || 500;\nlet telegramChatId = flow.get('currentMeasurementChatId');\n\n// Incrementa altura (0.5cm por iteração)\ncurrentHeight += 0.5;\n\n// Verifica se chegou ao final\nif (currentHeight > maxHeight) {\n    flow.set('simulationActive', false);\n    flow.set('simHeight', 0);\n    node.status({fill:\"yellow\",shape:\"ring\",text:\"Completo!\"});\n    node.warn(`✅ Simulação concluída: ${maxHeight}cm`);\n    \n    // Envia notificação Telegram\n    let chatId = telegramChatId || global.get('groupChatId') || (global.get('chatIds') || [])[0];\n    \n    if (chatId) {\n        let telegramMsg = {\n            payload: {\n                chatId: chatId,\n                type: 'message',\n                content: `✅ *Medição Concluída!*\\n\\n` +\n                         `📏 Altura total: ${(maxHeight/100).toFixed(2)}m (${maxHeight.toFixed(0)}cm)\\n` +\n                         `📊 Total de pontos: ${Math.floor(maxHeight / 0.5)}\\n` +\n                         `🕐 ${new Date().toLocaleString('pt-BR')}\\n\\n` +\n                         `Use /medicao para ver a última leitura`,\n                parse_mode: 'Markdown'\n            }\n        };\n        \n        // Limpa chat ID\n        flow.set('currentMeasurementChatId', null);\n        \n        return [null, telegramMsg];\n    }\n    \n    return null;\n}\n\nflow.set('simHeight', currentHeight);\n\n// Gera dados simulados realistas\nfunction getRandom(min, max) {\n    return Math.random() * (max - min) + min;\n}\n\n// Simula pequenas variações nas distâncias\nlet baseLeft = 0.35 + Math.sin(currentHeight / 50) * 0.02;\nlet baseRight = 0.34 + Math.cos(currentHeight / 50) * 0.02;\nlet baseFront = 0.55 + Math.sin(currentHeight / 30) * 0.03;\n\n// Simula vibração no acelerômetro\nlet baseAccelX = 9.81 + getRandom(-0.1, 0.1);\nlet baseAccelY = 0.05 + getRandom(-0.05, 0.05);\nlet baseAccelZ = 0.02 + getRandom(-0.03, 0.03);\n\nlet data = {\n    alturaAtual: parseFloat(currentHeight.toFixed(2)),\n    distance_left: parseFloat((baseLeft + getRandom(-0.005, 0.005)).toFixed(3)),\n    distance_right: parseFloat((baseRight + getRandom(-0.005, 0.005)).toFixed(3)),\n    distance_front: parseFloat((baseFront + getRandom(-0.005, 0.005)).toFixed(3)),\n    accel: {\n        x: parseFloat(baseAccelX.toFixed(3)),\n        y: parseFloat(baseAccelY.toFixed(3)),\n        z: parseFloat(baseAccelZ.toFixed(3))\n    }\n};\n\n// Salva última medição para Telegram\nglobal.set('ultimaMedicao', {\n    altura: currentHeight,\n    distEsq: data.distance_left * 1000,\n    distDir: data.distance_right * 1000,\n    distFrente: data.distance_front * 1000,\n    accelX: data.accel.x,\n    accelY: data.accel.y,\n    accelZ: data.accel.z,\n    timestamp: Date.now()\n});\n\nnode.status({fill:\"green\",shape:\"dot\",text:`${currentHeight.toFixed(1)}/${maxHeight}cm`});\n\nmsg.payload = data;\nreturn [msg, null];",
+      "outputs": 2,
+      "timeout": 0,
+      "noerr": 0,
+      "initialize": "",
+      "finalize": "",
+      "libs": [],
+      "x": 1020,
+      "y": 500,
+      "wires": [
+          [],
+          []
+      ]
+  },
+  {
+      "id": "856065317942c830",
+      "type": "function",
+      "z": "d896593336ac981c",
+      "name": "Start Simulation (Updated)",
+      "func": "let maxHeight = flow.get('maxHeight') || 5;\nlet telegramChatId = msg.telegramChatId || null;\n\nflow.set('simulationActive', true);\nflow.set('simHeight', 0);\nflow.set('simMaxHeight', maxHeight * 100);\n\nif (telegramChatId) {\n    flow.set('currentMeasurementChatId', telegramChatId);\n    node.warn(`🎮 Simulação iniciada via Telegram: ${maxHeight}m (chat: ${telegramChatId})`);\n} else {\n    node.warn(`🎮 Simulação iniciada via Dashboard: ${maxHeight}m`);\n}\n\nnode.status({fill:\"green\",shape:\"dot\",text:`Iniciando ${maxHeight}m`});\n\nmsg.payload = \"start\";\nreturn msg;",
+      "outputs": 1,
+      "timeout": 0,
+      "noerr": 0,
+      "initialize": "",
+      "finalize": "",
+      "libs": [],
+      "x": 940,
+      "y": 380,
+      "wires": [
+          []
+      ]
+  },
+  {
+      "id": "9b4a07c492fe7af3",
+      "type": "telegram command",
+      "z": "d896593336ac981c",
+      "name": "Comando /iniciar",
+      "command": "/iniciar",
+      "description": "Iniciar nova medição",
+      "registercommand": true,
+      "language": "",
+      "scope": "default",
+      "bot": "4e4e5d693b95c32b",
+      "strict": false,
+      "hasresponse": true,
+      "outputs": 2,
+      "x": 160,
+      "y": 1280,
+      "wires": [
+          [
+              "78c6b22bcf4ded0c"
+          ],
+          []
+      ]
+  },
+  {
+      "id": "b6c9c02e262fa9b3",
+      "type": "ui-markdown",
+      "z": "d896593336ac981c",
+      "group": "38c3216ef43f31f7",
+      "name": "Wokwi link",
+      "order": 2,
+      "width": "3",
+      "height": "1",
+      "content": "[🔗 Wokwi Project](https://wokwi.com/projects/440591027508086785)",
+      "className": "",
+      "x": 150,
+      "y": 140,
+      "wires": [
+          []
+      ]
+  },
+  {
+      "id": "ef4e9e53f4481aa6",
+      "type": "ui-markdown",
+      "z": "d896593336ac981c",
+      "group": "38c3216ef43f31f7",
+      "name": "Github link",
+      "order": 3,
+      "width": "3",
+      "height": "1",
+      "content": "[📲 GitHub Project](https://github.com/henri-engineer/Temperature-Humidity-Telegram/tree/main)",
+      "className": "",
+      "x": 310,
+      "y": 140,
+      "wires": [
+          []
+      ]
+  },
+  {
+      "id": "34098ee94c8a4ee1",
+      "type": "ui-markdown",
+      "z": "d896593336ac981c",
+      "group": "38c3216ef43f31f7",
+      "name": "README file",
+      "order": 5,
+      "width": "3",
+      "height": "1",
+      "content": "[📑 README file](https://github.com/henri-engineer/Temperature-Humidity-Telegram/blob/main/README.md)",
+      "className": "",
+      "x": 650,
+      "y": 140,
+      "wires": [
+          []
+      ]
+  },
+  {
+      "id": "a57bd0f51240ec94",
+      "type": "ui-markdown",
+      "z": "d896593336ac981c",
+      "group": "38c3216ef43f31f7",
+      "name": "Talk to ENKI Bot",
+      "order": 4,
+      "width": "3",
+      "height": "1",
+      "content": "[🔛 Talk to the Bot](https://web.telegram.org/k/#@ElevatorAlertBot)",
+      "className": "",
+      "x": 480,
+      "y": 140,
+      "wires": [
+          []
+      ]
+  },
+  {
+      "id": "38c3216ef43f31f7",
+      "type": "ui-group",
+      "name": "Header",
+      "page": "a822f583fed0c4dc",
+      "width": "12",
+      "height": 1,
+      "order": 1,
+      "showTitle": false,
+      "className": "",
+      "visible": "true",
+      "disabled": "false",
+      "groupType": "default"
+  },
+  {
+      "id": "d75573603da90a0f",
+      "type": "ui-group",
+      "name": "Comand Center",
+      "page": "a822f583fed0c4dc",
+      "width": "12",
+      "height": 1,
+      "order": 2,
+      "showTitle": true,
+      "className": "",
+      "visible": "true",
+      "disabled": "false",
+      "groupType": "default"
+  },
+  {
+      "id": "ce0ea5734c35a8a7",
+      "type": "mqtt-broker",
+      "name": "Mosquitto Public",
+      "broker": "test.mosquitto.org",
+      "port": "1883",
+      "clientid": "",
+      "autoConnect": true,
+      "usetls": false,
+      "protocolVersion": "4",
+      "keepalive": "60",
+      "cleansession": true,
+      "autoUnsubscribe": true,
+      "birthTopic": "",
+      "birthQos": "0",
+      "birthPayload": "",
+      "birthMsg": {},
+      "closeTopic": "",
+      "closePayload": "",
+      "closeMsg": {},
+      "willTopic": "",
+      "willQos": "0",
+      "willPayload": ""
+  },
+  {
+      "id": "009b9d62c53b5a1f",
+      "type": "ui-group",
+      "name": "⏩Acceleration Info",
+      "page": "a822f583fed0c4dc",
+      "width": 6,
+      "height": "3",
+      "order": 4,
+      "showTitle": true,
+      "className": "",
+      "visible": "true",
+      "disabled": "false",
+      "groupType": "default"
+  },
+  {
+      "id": "e83c18198eb13b00",
+      "type": "ui-group",
+      "name": "🛗Trail Distance Measuring",
+      "page": "a822f583fed0c4dc",
+      "width": 6,
+      "height": 1,
+      "order": 3,
+      "showTitle": true,
+      "className": "",
+      "visible": "true",
+      "disabled": "false",
+      "groupType": "default"
+  },
+  {
+      "id": "c858b0b6a2eec9ee",
+      "type": "ui-group",
+      "name": "📊 Acceleration vs Height",
+      "page": "a822f583fed0c4dc",
+      "width": 6,
+      "height": 6,
+      "order": 5,
+      "showTitle": true,
+      "className": "",
+      "visible": "true",
+      "disabled": "false",
+      "groupType": "default"
+  },
+  {
+      "id": "d88514ff34985808",
+      "type": "ui-group",
+      "name": "📏 Trail Distance vs Height",
+      "page": "a822f583fed0c4dc",
+      "width": 6,
+      "height": 6,
+      "order": 6,
+      "showTitle": true,
+      "className": "",
+      "visible": "true",
+      "disabled": "false",
+      "groupType": "default"
+  },
+  {
+      "id": "4e4e5d693b95c32b",
+      "type": "telegram bot",
+      "botname": "ElevatorAlertBot",
+      "usernames": "",
+      "chatids": "",
+      "baseapiurl": "",
+      "testenvironment": false,
+      "updatemode": "polling",
+      "pollinterval": 300,
+      "usesocks": false,
+      "sockshost": "",
+      "socksprotocol": "socks5",
+      "socksport": 6667,
+      "socksusername": "anonymous",
+      "sockspassword": "",
+      "bothost": "",
+      "botpath": "",
+      "localbothost": "0.0.0.0",
+      "localbotport": 8443,
+      "publicbotport": 8443,
+      "privatekey": "",
+      "certificate": "",
+      "useselfsignedcertificate": false,
+      "sslterminated": false,
+      "verboselogging": false
+  },
+  {
+      "id": "a822f583fed0c4dc",
+      "type": "ui-page",
+      "name": "🔱 Enki Prototype 🔱",
+      "ui": "fb026497e3258b13",
+      "path": "/enki-prototype",
+      "icon": "account-wrench-outline",
+      "layout": "grid",
+      "theme": "theme_enki",
+      "breakpoints": [
+          {
+              "name": "Default",
+              "px": "0",
+              "cols": "3"
+          },
+          {
+              "name": "Tablet",
+              "px": "576",
+              "cols": "6"
+          },
+          {
+              "name": "Small Desktop",
+              "px": "768",
+              "cols": "9"
+          },
+          {
+              "name": "Desktop",
+              "px": "1024",
+              "cols": "12"
+          }
+      ],
+      "order": 4,
+      "className": "",
+      "visible": "true",
+      "disabled": "false"
+  },
+  {
+      "id": "fb026497e3258b13",
+      "type": "ui-base",
+      "name": "My Dashboard",
+      "path": "/dashboard",
+      "appIcon": "https://newpartselevator.com.br/assets/img/favicon/favicon-16x16.png",
+      "includeClientData": true,
+      "acceptsClientConfig": [
+          "ui-notification",
+          "ui-control"
+      ],
+      "showPathInSidebar": false,
+      "headerContent": "page",
+      "navigationStyle": "default",
+      "titleBarStyle": "default",
+      "showReconnectNotification": true,
+      "notificationDisplayTime": 1,
+      "showDisconnectNotification": true,
+      "allowInstall": true
+  },
+  {
+      "id": "theme_enki",
+      "type": "ui-theme",
+      "name": "Enki Dark",
+      "colors": {
+          "surface": "#1f2937",
+          "primary": "#0094ce",
+          "bgPage": "#111827",
+          "groupBg": "#374151",
+          "groupOutline": "#4b5563"
+      },
+      "sizes": {
+          "density": "default",
+          "pagePadding": "12px",
+          "groupGap": "12px",
+          "groupBorderRadius": "8px",
+          "widgetGap": "12px"
+      }
+  },
+  {
+      "id": "6e2af66f96be4938",
+      "type": "global-config",
+      "env": [],
+      "modules": {
+          "@flowfuse/node-red-dashboard": "1.29.0",
+          "node-red-contrib-telegrambot": "16.3.3"
+      }
+  }
+]
